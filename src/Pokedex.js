@@ -1,30 +1,75 @@
 import React from 'react';
 import Pokemon from './Pokemon';
+import Button from './Button';
+import './pokedex.css';
 
 class Pokedex extends React.Component {
-
-  constructor (props) {
+  constructor(props) {
     super(props);
-    this.handleClick = this.handleClick.bind(this);
-    this.state = { index: 0 };
-
+    this.state = {
+      pokemonIndex: 0,
+      filteredType: 'all',
+    };
   }
 
-  handleClick = () => {
-    if ([this.state.index] < this.props.pokemons.length - 1) {
-      this.setState({ index: this.state.index + 1 });
-    } else {
-      this.setState({ index: 0 });
-    }
-  };
+  filterPokemons(filteredType) {
+    this.setState({ filteredType, pokemonIndex: 0 });
+  }
+
+  nextPokemon(numberOfPokemons) {
+    this.setState(state => ({
+      pokemonIndex: (state.pokemonIndex + 1) % numberOfPokemons,
+    }));
+  }
+
+  fetchFilteredPokemons() {
+    const { pokemons } = this.props;
+    const { filteredType } = this.state;
+
+    return pokemons.filter(pokemon => {
+      if (filteredType === 'all') return true;
+      return pokemon.type === filteredType;
+    });
+  }
+
+  fetchPokemonTypes() {
+    const { pokemons } = this.props;
+
+    return [...new Set(pokemons.reduce((types, { type }) => [...types, type], []))];
+  }
 
   render() {
+    const filteredPokemons = this.fetchFilteredPokemons();
+    const pokemonTypes = this.fetchPokemonTypes();
+    const pokemon = filteredPokemons[this.state.pokemonIndex];
+
     return (
-      <div>
-        <div className="pokedex">
-          <Pokemon key={ this.props.pokemons[this.state.index] } pokemon={ this.props.pokemons[this.state.index] } />
+      <div className="pokedex">
+        <Pokemon pokemon={ pokemon } />
+        <div className="pokedex-buttons-panel">
+          <Button
+            onClick={ () => this.filterPokemons('all') }
+            className="filter-button"
+          >
+            All
+          </Button>
+          { pokemonTypes.map(type => (
+            <Button
+              key={ type }
+              onClick={ () => this.filterPokemons(type) }
+              className="filter-button"
+            >
+              { type }
+            </Button>
+          )) }
         </div>
-        <button onClick={ this.handleClick }>Next Pokemon</button>
+        <Button
+          className="pokedex-button"
+          onClick={ () => this.nextPokemon(filteredPokemons.length) }
+          disabled={ filteredPokemons.length <= 1 }
+        >
+          Próximo pokémon
+        </Button>
       </div>
     );
   }
