@@ -1,4 +1,5 @@
 import React from 'react';
+import './pokemon.css';
 
 class Pokemon extends React.Component {
   render() {
@@ -7,9 +8,11 @@ class Pokemon extends React.Component {
     return (
       <div className="pokemon">
         <div>
-          <p> { name } </p>
-          <p> { type } </p>
-          <p> { `Average weight: ${averageWeight.value} ${averageWeight.measurementUnit}` }</p>
+          <p>{ name }</p>
+          <p>{ type }</p>
+          <p>
+            Average weight: { averageWeight.value } { averageWeight.measurementUnit }
+          </p>
         </div>
         <img src={ image } alt={ `${name} sprite` } />
       </div>
